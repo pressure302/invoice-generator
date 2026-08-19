@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="116" height="120" viewBox="0 0 116 120" role="img" aria-labelledby="title">
+  <title id="title">Invoice Generator logo</title>
+  <rect width="116" height="120" rx="14" fill="#246b63"/>
+  <path d="M33 24h38l12 12v60H33z" fill="#ffffff"/>
+  <path d="M70 24v14h13" fill="#dbe8e5"/>
+  <path d="M45 52h26M45 64h26M45 76h18" stroke="#246b63" stroke-width="5" stroke-linecap="round"/>
+</svg>

@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+tmp/
+config.json
+data/state.json
+assets/*
+output/invoices/*.pdf

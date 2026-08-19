@@ -1,0 +1,8 @@
+{
+  "company_name": "Your Company Name",
+  "company_address_lines": [
+    "Street Address",
+    "City, ST ZIP"
+  ],
+  "logo_path": ""
+}

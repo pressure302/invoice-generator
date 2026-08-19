@@ -2,6 +2,6 @@ __pycache__/
 *.pyc
 tmp/
 config.json
-data/state.json
+data/*.json
 assets/*
 output/invoices/*.pdf

@@ -26,6 +26,7 @@ ASSETS_DIR = ROOT / "assets"
 DATA_DIR = ROOT / "data"
 OUTPUT_DIR = ROOT / "output" / "invoices"
 STATE_PATH = DATA_DIR / "state.json"
+STATE_BACKUP_PATH = DATA_DIR / "state.backup.json"
 CONFIG_PATH = ROOT / "config.json"
 DEFAULT_CONFIG = {
     "company_name": "Your Company Name",
@@ -102,6 +103,7 @@ STATE_OPTIONS = {
 
 INITIAL_NEXT_INVOICE_NUMBER = 120001
 MAX_ITEMS = 20
+RECENT_INVOICE_LIMIT = 10
 MONEY = Decimal("0.01")
 STATE_LOCK = threading.Lock()
 
@@ -114,7 +116,10 @@ def ensure_directories() -> None:
     for directory in (DATA_DIR, OUTPUT_DIR):
         directory.mkdir(parents=True, exist_ok=True)
     if not STATE_PATH.exists():
-        save_state({"next_invoice_number": INITIAL_NEXT_INVOICE_NUMBER, "invoices": []})
+        if STATE_BACKUP_PATH.exists():
+            STATE_PATH.write_text(STATE_BACKUP_PATH.read_text(encoding="utf-8"), encoding="utf-8")
+        else:
+            save_state({"next_invoice_number": INITIAL_NEXT_INVOICE_NUMBER, "invoices": []})
 
 
 def load_state() -> dict:
@@ -129,6 +134,10 @@ def save_state(state: dict) -> None:
     with tmp_path.open("w", encoding="utf-8") as handle:
         json.dump(state, handle, indent=2)
     tmp_path.replace(STATE_PATH)
+    backup_tmp_path = STATE_BACKUP_PATH.with_suffix(".tmp")
+    with backup_tmp_path.open("w", encoding="utf-8") as handle:
+        json.dump(state, handle, indent=2)
+    backup_tmp_path.replace(STATE_BACKUP_PATH)
 
 
 def money(value: object, field_name: str) -> Decimal:
@@ -466,6 +475,7 @@ def create_invoice(payload: dict) -> dict:
                 "data": form_data,
             }
         )
+        state["invoices"] = state["invoices"][-RECENT_INVOICE_LIMIT:]
         save_state(state)
 
     return {

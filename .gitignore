@@ -1,6 +1,7 @@
 __pycache__/
 *.pyc
 tmp/
+private_data_path.txt
 config.json
 data/*.json
 assets/*

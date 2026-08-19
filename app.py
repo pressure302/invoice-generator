@@ -22,12 +22,27 @@ from reportlab.platypus import Paragraph
 
 ROOT = Path(__file__).resolve().parent
 STATIC_DIR = ROOT / "static"
-ASSETS_DIR = ROOT / "assets"
-DATA_DIR = ROOT / "data"
-OUTPUT_DIR = ROOT / "output" / "invoices"
+PRIVATE_PATH_FILE = ROOT / "private_data_path.txt"
+
+
+def resolve_private_root() -> Path:
+    env_path = str(__import__("os").environ.get("INVOICE_GENERATOR_PRIVATE_DIR", "")).strip()
+    if env_path:
+        return Path(env_path).expanduser().resolve()
+    if PRIVATE_PATH_FILE.exists():
+        path_text = PRIVATE_PATH_FILE.read_text(encoding="utf-8").strip()
+        if path_text:
+            return Path(path_text).expanduser().resolve()
+    return ROOT
+
+
+PRIVATE_ROOT = resolve_private_root()
+ASSETS_DIR = PRIVATE_ROOT / "assets"
+DATA_DIR = PRIVATE_ROOT / "data"
+OUTPUT_DIR = PRIVATE_ROOT / "output" / "invoices"
 STATE_PATH = DATA_DIR / "state.json"
 STATE_BACKUP_PATH = DATA_DIR / "state.backup.json"
-CONFIG_PATH = ROOT / "config.json"
+CONFIG_PATH = PRIVATE_ROOT / "config.json"
 DEFAULT_CONFIG = {
     "company_name": "Your Company Name",
     "company_address_lines": [
@@ -305,7 +320,7 @@ def draw_pdf(invoice: dict, output_path: Path) -> None:
 
     body = ParagraphStyle("Body", fontName="Helvetica", fontSize=9, leading=12, textColor=colors.HexColor("#202020"))
     small = ParagraphStyle("Small", fontName="Helvetica", fontSize=8, leading=10, textColor=colors.HexColor("#333333"))
-    logo_path = ROOT / str(config.get("logo_path", ""))
+    logo_path = PRIVATE_ROOT / str(config.get("logo_path", ""))
     if str(config.get("logo_path", "")).strip() and logo_path.exists():
         canvas.drawImage(str(logo_path), margin, top - 0.78 * inch, width=0.72 * inch, height=0.75 * inch, mask="auto")
     else:

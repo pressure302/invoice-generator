@@ -18,11 +18,13 @@ A small local web app for creating sequential invoice PDFs. It runs with Python'
 
 ## Privacy model
 
-This app is designed for local use. Generated invoices, invoice history, local company configuration, and private logo assets are ignored by Git:
+This app is designed for local use. Generated invoices, invoice history, local company configuration, private-data path pointers, and private logo assets are ignored by Git:
 
 - `data/state.json`
+- `data/state.backup.json`
 - `output/invoices/*.pdf`
 - `config.json`
+- `private_data_path.txt`
 - `assets/*`
 
 Do not commit real client records, merchant IDs, invoice PDFs, private logos, or production company details.
@@ -50,6 +52,8 @@ Copy-Item config.example.json config.json
 
 Edit `config.json` with your company name, address lines, and optional logo path.
 
+To store private runtime files outside the repository, create an ignored `private_data_path.txt` file containing the private folder path, or set the `INVOICE_GENERATOR_PRIVATE_DIR` environment variable. The app will store `config.json`, invoice state, private assets, and generated PDFs under that private folder.
+
 ## Run
 
 ```powershell
@@ -66,4 +70,4 @@ The app will try ports `8000` through `8010` if the first port is already in use
 
 ## Notes
 
-This is intentionally lightweight: there is no database, account system, or cloud service dependency. Invoice history is stored in a local JSON file and PDFs are written to `output/invoices/`.
+This is intentionally lightweight: there is no database, account system, or cloud service dependency. Invoice history is stored in a local JSON file and PDFs are written to `output/invoices/` under the configured private data folder.
